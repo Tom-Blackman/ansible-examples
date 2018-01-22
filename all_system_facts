@@ -395,7 +395,7 @@ ok: [minion2] => {
                     "192.168.2.1"
                 ], 
                 "search": [
-                    "squiggle.lan"
+                    "domain.lan"
                 ]
             }, 
             "ansible_domain": "squiggle.lan", 
@@ -491,7 +491,7 @@ ok: [minion2] => {
             }, 
             "ansible_fips": false, 
             "ansible_form_factor": "Other", 
-            "ansible_fqdn": "minion2.squiggle.lan", 
+            "ansible_fqdn": "minion2.domain.lan", 
             "ansible_hostname": "minion2", 
             "ansible_interfaces": [
                 "lo", 
