@@ -398,7 +398,7 @@ ok: [minion2] => {
                     "domain.lan"
                 ]
             }, 
-            "ansible_domain": "squiggle.lan", 
+            "ansible_domain": "domain.lan", 
             "ansible_effective_group_id": 0, 
             "ansible_effective_user_id": 0, 
             "ansible_env": {
