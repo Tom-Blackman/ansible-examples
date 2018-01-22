@@ -13,7 +13,7 @@
     - pam_sshd_cfgfile: /etc/pam.d/sshd
 
     # PAM radius server line for pam_radius.conf file
-    - radius_svr: 205.157.105.110  %Gq6Ek83MZh,?   10'
+    - radius_svr: 192.168.2.1  N)_*32x23MZh,?   10'
 
   tasks:
     
