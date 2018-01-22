@@ -10,8 +10,8 @@
     acct_home: /home/systems
     acct_grp: 100
     acct_shell: /bin/bash
-    acct_passwd: $1$bn#$3eW0zWQaV8Qirebgqi2pC/
-    acct_comment: Systems account for Atos
+    acct_passwd: $1$bn#$3eW0zWQaV8QirebNxi2pC/
+    acct_comment: Systems account
     
   tasks:
     - name: add test user to the system named "systems"
