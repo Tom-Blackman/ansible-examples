@@ -1,0 +1,36 @@
+---
+- hosts: '{{ target }}'
+  name: Configure and install Tripwire on the server
+  become: yes
+  vars:
+
+    - rpm_dest: /tmp/te_agent.bin
+    - rpm_src: RPM/te_agent.bin
+    - inst_cmd: /tmp/te_agent.bin --eula accept --silent --server-host USCHTWCON01.na.odcorp.net --server-port 9898 --passphrase tripwireprod
+
+
+  tasks:
+
+    - name: check and see if Tripwire is installed
+      stat:
+        path: /usr/local/tripwire/te/agent/jre/bin/java
+      register: tw_inst
+
+    - name: copy and install Tripwire BIN file to the server
+      copy:
+        src: '{{ rpm_src }}'
+        dest: '{{ rpm_dest }}'
+        mode: 0755
+      when: tw_inst.stat.exists == False
+
+    - name: install Tripwire agent that was previously copied
+      command: '{{ inst_cmd }}'
+      when: tw_inst.stat.exists == False
+      notify: start Tripwire
+
+  handlers:
+    - name: start Tripwire
+      service:
+        name: twdaemon
+        state: started
+

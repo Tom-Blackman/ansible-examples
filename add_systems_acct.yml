@@ -1,0 +1,27 @@
+---
+- hosts: all
+  gather_facts: true
+  become: true
+  become_method: sudo
+  
+  vars:
+    acct_name: systems
+    acct_uid: 11101
+    acct_home: /home/systems
+    acct_grp: 100
+    acct_shell: /bin/bash
+    acct_passwd: $1$bn#$3eW0zWQaV8Qirebgqi2pC/
+    acct_comment: Systems account for Atos
+    
+  tasks:
+    - name: add test user to the system named "systems"
+      user: 
+        name: "{{ acct_name }}"
+        uid: "{{ acct_uid }}"
+        home: "{{ acct_home }}"
+        group: "{{ acct_grp }}"
+        shell: "{{ acct_shell }}"
+        password: "{{ acct_passwd }}"
+        comment: "{{ acct_comment }}"
+      register: account
+      

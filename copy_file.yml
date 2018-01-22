@@ -1,0 +1,16 @@
+---
+- hosts: all
+  name: Configure /etc/resolv.conf with the appropriate file based on the type of server
+  become: yes
+  vars:
+    - domain: na
+    - destination: /tmp/resolv.conf
+
+  tasks:
+
+    # Copy the new /etc/resolv.conf from the source, using the correct domain from the file in the TEMPLATES directory
+    - name: copy /etc/resolv.conf 
+      template:
+        src: TEMPLATES/resolv.conf-{{ domain }}
+        dest: '{{ destination }}'
+

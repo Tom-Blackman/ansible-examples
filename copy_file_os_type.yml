@@ -1,0 +1,35 @@
+---
+- hosts: all
+  name: Configure SSHD with the default sshd_config file
+  become: yes
+  vars:
+    - destination: /tmp/sshd_config
+
+  tasks:
+
+    - name: copy /etc/ssh/sshd_config Centos
+      template:
+        src: TEMPLATES/sshd_config_centos7
+        dest: '{{ destination }}'
+      notify: restart sshd 
+      when: (ansible_distribution == "CentOS")
+    
+    - name: copy /etc/ssh/sshd_config RedHat
+      template:
+        src: TEMPLATES/sshd_config_rhel7
+        dest: '{{ destination }}'
+      notify: restart sshd 
+      when: (ansible_distribution == "RedHat")
+    
+    - name: copy /etc/ssh/sshd_config SUSE
+      template:
+        src: TEMPLATES/sshd_config_sles11
+        dest: '{{ destination }}'
+      notify: restart sshd 
+      when: (ansible_distribution == "SLES")
+
+  handlers:
+    - name: restart sshd
+      service: 
+        name: sshd 
+        state: restarted

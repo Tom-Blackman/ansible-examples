@@ -1,0 +1,22 @@
+---
+- hosts: all
+  become: true
+  
+  tasks:
+    # Modify the lines in a file, and replace them with new information
+    - name: Configure /etc/security/pwquality.conf file for RHEL and CentOS servers
+      lineinfile: dest=/etc/security/pwquality.conf regexp="{{ item.regexp }}" line="{{ item.line }}" backup=yes
+      with_items:
+          - { regexp: "^.*minlen", line: "minlen = 8" }
+          - { regexp: "^.*dcredit", line: "dcredit = -1" }
+          - { regexp: "^.*ucredit", line: "ucredit = -1" }
+          - { regexp: "^.*lcredit", line: "lcredit = -1" }
+          - { regexp: "^.*ocredit", line: "ocredit = -1" }
+          
+    # Modify the lines in a file, and replace them with new information, more complex regexp
+    - name: Configure /etc/security/password-auth for RHEL and CentOS servers
+      lineinfile: dest=/etc/pam.d/password-auth regexp="{{ item.regexp }}" line="{{ item.line }}" backup=yes
+      with_items:
+          - { regexp: "^password.*requisite.*pam_pwquality.so try_first_pass local_users_only retry=. authtok_type=" , line: "password    requisite     pam_pwquality.so try_first_pass local_users_only retry=5 authtok_type=" }
+          - { regexp: "^password.*sufficient.*pam_unix.so sha512 shadow nullok try_first_pass use_authtok" , line: "password    sufficient    pam_unix.so sha512 shadow nullok try_first_pass use_authtok remember=12" }
+

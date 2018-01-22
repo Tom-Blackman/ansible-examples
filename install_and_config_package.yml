@@ -1,0 +1,71 @@
+---
+- hosts: all
+  name: Install and configure 2FA on the server
+  become: yes
+  vars:
+
+    # RPM to be installed for PAM RADIUS
+    - rpm_dest: /tmp/pam_radius-1.4.0-2.el7.x86_64.rpm
+    - rpm_src: RPM/pam_radius-1.4.0-2.el7.x86_64.rpm
+  
+    # Configuration file locations
+    - radius_cfg_file: /etc/pam_radius.conf
+    - pam_sshd_cfgfile: /etc/pam.d/sshd
+
+    # PAM radius server line for pam_radius.conf file
+    - radius_svr: 205.157.105.110  %Gq6Ek83MZh,?   10'
+
+  tasks:
+    
+    # Need code to not have this run when the RPM is already installed
+    - name: Copy 2FA RPM file to the server
+      copy:
+        src: '{{ rpm_src }}'
+        dest: '{{ rpm_dest }}'
+
+
+    - name: Install copied 2fa RPM
+      yum:
+        name: '{{ rpm_dest }}'
+        state: present
+
+    
+    - name: Update 2FA radius config file to the server
+      lineinfile:
+         path: '{{ radius_cfg_file }}'
+         line: '{{ radius_svr }}'
+
+    # Delete lines from a file that we dont want
+    - name: Clean out /etc/pam_radius.conf example settings
+      lineinfile:
+         path: '{{ radius_cfg_file }}'
+         state: absent
+         regexp: '{{ item }}'
+      with_items:
+        - '^127.0.0.1'
+        - '^other-server'
+        
+    # Add lines to a file
+    - name: Configure /etc/pam.d/sshd with 2FA settings
+      lineinfile:
+         path: '{{ pam_sshd_cfgfile }}'
+         line: '{{ item }}'
+         insertafter: '^#%PAM-1.0'
+
+      # THESE HAVE TO BE IN REVERSE ORDER, DUE TO THE "INSERT AFTER" ABOVE
+      # "INSERT AFTER" is required as it has to be at the top of the file
+      with_items:
+        - '# 2-factor end'
+        - 'auth    required        /lib64/security/pam_radius_auth.so debug'
+        - 'auth    [success=1 default=ignore]      pam_access.so accessfile=/etc/security/access-local.conf'
+        - '# 2-factor start'
+
+      notify: restart sshd
+
+  # restart a service
+  handlers:
+    - name: restart sshd
+      service:
+        name: sshd
+        state: restarted
+

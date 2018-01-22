@@ -1,0 +1,54 @@
+---
+- hosts: all
+  become: yes
+  # NOTE - this works when the machines are registered with a repo server
+  vars:
+    # packages to install on RHEL machines
+    mgmt_packages_rhel:
+      - rsync
+      - traceroute
+      - net-tools
+      - open-vm-tools
+      - pmtools
+      - tcpdump
+      - telnet
+      - sysstat
+      - coreutils
+      - iotop
+      - lsof
+      - yum-utils
+      - nscd
+    # packages to install on SUSE machines
+    mgmt_packages_suse:
+      - net-tools
+      - pmtools
+      - tcpdump
+      - sysstat
+      - coreutils
+      - iftop
+      - iotop
+      - lsof
+      - rsync
+
+
+  
+  tasks:
+    # install the pacakges from the list defined above for RHEL
+    - name: install MGMT packages CentOS or RHEL
+      yum:
+        name: "{{ item }}"
+        state: latest
+        update_cache: yes
+      with_items: "{{ mgmt_packages_rhel }}"
+      # this play only works when the ansible_distribution is RedHat or CentOS
+      when: (ansible_distribution == "CentOS") or (ansible_distribution == "RedHat")
+
+    # install the pacakges from the list defined above for SUSE
+    - name: install MGMT packages SUSE
+      zypper:
+        name: "{{ item }}"
+        state: latest
+        update_cache: yes
+      with_items: "{{ mgmt_packages_suse }}"
+      # this play only works when the ansible_distribution is SUSE
+      when: (ansible_distribution == "SLES")

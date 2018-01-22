@@ -1,0 +1,73 @@
+---
+- hosts: all
+  gather_facts: true
+  become: true
+  become_method: sudo
+  
+  # Define variables for use throughout the play
+  vars:
+    acct_name: systems
+    acct_uid: 11101
+    acct_home: /home/systems
+    acct_grp: 100
+    acct_shell: /bin/bash
+    acct_passwd: $1$bn#$3eW0zWQaV8Qirebgqi2pC/
+    acct_comment: Systems account for Atos
+  
+  # Tasks to run  
+  tasks:
+    - name: add test user to the system named "systems", and register details in "account"
+      user: 
+        name: "{{ acct_name }}"
+        uid: "{{ acct_uid }}"
+        home: "{{ acct_home }}"
+        group: "{{ acct_grp }}"
+        shell: "{{ acct_shell }}"
+        password: "{{ acct_passwd }}"
+        comment: "{{ acct_comment }}"
+      register: account
+  
+# Debugging examples
+
+# Display the output from "account" registered above
+#    - debug: 
+#          msg: "{{ account }}"
+  
+# Display all facts about a host           
+#    - name: Display all variables/facts known for the target
+#      debug: 
+#          msg: "{{ hostvars }}"
+  
+# Display a subset of information that is contained in a list 
+# which is data surrounded by [ and ] by using "with_flattened"
+#
+# Show the mount points on the system
+#    - name: Display the mount points for the target
+#      debug: 
+#          msg: "{{ item.mount }}"
+#      with_flattened: "{{ ansible_mounts }}"
+
+
+# Fact examples:
+
+# Set a new fact, based on an existing fact
+#    - set_fact:
+#         kern_type: "{{ ansible_machine }}"
+#          
+#    - debug: 
+#          msg: "{{ kern_type }}"
+#          
+# Combine 2 facts into a single fact - hardware and kernel version of target
+#    - set_fact:
+#         kern_type_ver: "{{ ansible_machine }}---{{ ansible_kernel }}"
+#          
+#    - debug: 
+#          msg: "{{ kern_type_ver }}"
+  
+# Create a list of items in a fact - mount points of the target
+#    - set_fact:
+#        fs_list: "{{ ansible_mounts | map (attribute='mount') | list}}"
+#      with_items: "{{ ansible_mounts }}"
+#      
+#    - debug:
+#          msg: "{{ fs_list }}"

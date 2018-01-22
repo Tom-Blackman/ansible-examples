@@ -1,0 +1,16 @@
+---
+- hosts: all
+  gather_facts: true
+  become: true
+  become_method: sudo
+  tasks:
+    # patch a CentOS or RHEL machine using yum
+    - name: update RedHat and CentOS
+      yum: name=* state=latest update_cache=yes
+      when: (ansible_distribution == "CentOS") or (ansible_distribution == "RedHat")
+
+    # Patchg a SLES machine using zypper
+    - name: update SLES
+      zypper: name=* state=latest update_cache=yes
+      when: (ansible_distribution == "SLES") 
+
