@@ -3,7 +3,7 @@
   gather_facts: true
   become: true
   become_method: sudo
-  
+
   vars:
     acct_name: systems
     acct_uid: 11101
@@ -12,10 +12,10 @@
     acct_shell: /bin/bash
     acct_passwd: $1$bn#$3eW0zWQaV8QirebNxi2pC/
     acct_comment: Systems account
-    
+
   tasks:
     - name: add test user to the system named "systems"
-      user: 
+      user:
         name: "{{ acct_name }}"
         uid: "{{ acct_uid }}"
         home: "{{ acct_home }}"
@@ -24,4 +24,5 @@
         password: "{{ acct_passwd }}"
         comment: "{{ acct_comment }}"
       register: account
-      
+
+# new comment to see what happens
