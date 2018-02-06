@@ -3,11 +3,8 @@
   gather_facts: true
   become: true
   become_method: sudo
-  
-  # Tasks to run  
+
   tasks:
-    # Display all facts about a host           
     - name: Display all variables/facts known for the target
-      debug: 
+      debug:
           msg: "{{ hostvars }}"
-  
