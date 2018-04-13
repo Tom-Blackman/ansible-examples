@@ -1,0 +1,91 @@
+---
+- hosts: localhost
+  gather_facts: false
+  vars:
+    - vm_datacenter: 'XXXXXX'
+    - notes: 'Created by ansible'
+
+  vars_prompt:
+    - name: "vcenter_host"
+      prompt: "vcenter host?"
+      private: no
+      default: 'VCENTER.XXXX.YYYY'
+    - name: "vcenter_user"
+      prompt: "vcenter user?"
+      private: no
+      default: 'noel'
+    - name: "vcenter_pass"
+      prompt: "vcenter_pass?"
+      private: yes
+      default: 'ABC123!!!'
+    - name: "vm_cluster"
+      prompt: "vm_cluster?"
+      private: no
+    - name: "vm_name"
+      prompt: "New VM name?"
+      private: no
+    - name: "vm_template"
+      prompt: "Template to deploy?"
+      private: no
+      default: 'master'
+    - name: "vm_network"
+      prompt: "vm network tag/segment?"
+      private: no
+      default: 'VM Network'
+    - name: "vm_IP"
+      prompt: "IP address?"
+      private: no
+    - name: "vm_netmask"
+      prompt: "Netmask?"
+      private: no
+      default: '255.255.255.0'
+    - name: "vm_gateway"
+      prompt: "Default Gateway?"
+      private: no
+    - name: "vm_ram"
+      prompt: "RAM memory? [GB]"
+      private: no
+      default: '1'
+    - name: "vm_cpu"
+      prompt: "Number of CPUs?"
+      private: no
+      default: '1'
+    - name: "vm_app_disk"
+      prompt: "Application disk size?"
+      private: no
+      default: '5'
+    - name: "vm_datastore"
+      prompt: "Datastore?"
+      private: no
+      default: 'datastore1'
+
+  tasks:
+    - name: VMCREATE | Create a VM from a template
+      vmware_guest:
+        hostname: "{{ vcenter_host }}"
+        username: "{{ vcenter_user }}"
+        password: "{{ vcenter_pass }}"
+        datacenter: "{{ vm_datacenter }}"
+        validate_certs: false
+        folder: "{{ vm_datacenter }}/vm"
+        name: "{{ vm_name }}"
+        state: poweredon
+        template: "{{ vm_template }}"
+        disk:
+        - size_gb: 16
+          type: thin
+          datastore: "{{ vm_datastore }}"
+        - size_gb: "{{ vm_app_disk }}"
+          type: thin
+          datastore: "{{ vm_datastore }}"
+        hardware:
+          memory_gb: "{{ vm_ram }}"
+          num_cpus: "{{ vm_cpu }}"
+        networks:
+        - name: "{{ vm_network }}"
+          device_type: vmxnet3
+          ip: "{{ vm_IP }}"
+          netmask: "{{ vm_netmask }}"
+          gateway: "{{ vm_gateway }}"
+      delegate_to: localhost
+      register: deploy
