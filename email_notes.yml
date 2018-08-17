@@ -1,0 +1,23 @@
+---
+- hosts: all
+  gather_facts: true
+  become: true
+  become_method: sudo
+
+  tasks:
+  - name: make report
+    copy: 
+      content: '{{ hostvars | to_nice_json }}' 
+      dest: /tmp/file
+
+  - name: Email
+    mail:
+      host: localhost
+      port: 25
+      to: thomas.blackman@officedepot.com
+      from: thomas.blackman@officedepot.com
+      subject: Report
+      charset: utf8
+      subtype: html
+      attach: /tmp/file
+      body: System '{{ ansible_hostname }}' has this info '{{ hostvars | from_json }}'
